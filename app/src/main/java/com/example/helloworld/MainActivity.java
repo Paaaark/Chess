@@ -61,6 +61,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.playerOneCheck:
                 // #TODO: playerOneCheck
+                if (alternateTurn != 0) {
+                    Toast.makeText(this, "Not your turn", Toast.LENGTH_SHORT).show();
+                } else {
+                    finishBetting = true;
+                    int diff = game.getPlayerTwoBetAmount() - game.getPlayerOneBetAmount();
+                    game.playerOneBet(diff);
+                    updateStanding();
+                    alternateTurn = 1;
+                }
                 break;
             case R.id.playerOneRaise:
                 // #TODO: playerOneRaise
@@ -77,13 +86,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.playerTwoCheck:
-                // #TODO: playerTwoCheck
+                if (alternateTurn != 1) {
+                    Toast.makeText(this, "Not your turn", Toast.LENGTH_SHORT).show();
+                } else {
+                    finishBetting = true;
+                    int diff = game.getPlayerOneBetAmount() - game.getPlayerTwoBetAmount();
+                    game.playerTwoBet(diff);
+                    updateStanding();
+                    alternateTurn = 0;
+                }
                 break;
             case R.id.playerTwoRaise:
                 // #TODO: playerTwoRaise
                 break;
             case R.id.playerTwoFold:
-                if (alternateTurn != 0) {
+                if (alternateTurn != 1) {
                     Toast.makeText(this, "Not your turn", Toast.LENGTH_SHORT).show();
                 } else {
                     finishTurn = true;

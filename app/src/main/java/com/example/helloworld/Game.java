@@ -67,4 +67,10 @@ public class Game {
         playerTwo.emptyBetAmount();
         playerTwo.addHolding(totalAmount);
     }
+    public void playerOneBet(int amount) {
+        playerOne.addBetAmount(amount);
+    }
+    public void playerTwoBet(int amount) {
+        playerTwo.addBetAmount(amount);
+    }
 }

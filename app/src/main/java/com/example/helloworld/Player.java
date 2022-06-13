@@ -30,6 +30,7 @@ public class Player {
     }
     public void addBetAmount(int amount) {
         betAmount += amount;
+        holding -= amount;
     }
     public void addHolding(int amount) {
         holding += amount;
