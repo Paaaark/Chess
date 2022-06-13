@@ -43,10 +43,28 @@ public class Game {
     public int getPlayerTwoHolding() {
         return playerTwo.getHolding();
     }
+    public int getPlayerOneBetAmount() {
+        return playerOne.getBetAmount();
+    }
+    public int getPlayerTwoBetAmount() {
+        return playerTwo.getBetAmount();
+    }
     public Player getPlayerOne() {
         return playerOne;
     }
     public Player getPlayerTwo() {
         return playerTwo;
+    }
+    public void playerOneWon() {
+        int totalAmount = playerOne.getBetAmount() + playerTwo.getBetAmount();
+        playerOne.emptyBetAmount();
+        playerTwo.emptyBetAmount();
+        playerOne.addHolding(totalAmount);
+    }
+    public void playerTwoWon() {
+        int totalAmount = playerOne.getBetAmount() + playerTwo.getBetAmount();
+        playerOne.emptyBetAmount();
+        playerTwo.emptyBetAmount();
+        playerTwo.addHolding(totalAmount);
     }
 }

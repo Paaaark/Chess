@@ -28,8 +28,13 @@ public class Player {
     public int getBetAmount() {
         return betAmount;
     }
-    public int addBetAmount(int amount) {
+    public void addBetAmount(int amount) {
         betAmount += amount;
-        return betAmount;
+    }
+    public void addHolding(int amount) {
+        holding += amount;
+    }
+    public void emptyBetAmount() {
+        betAmount = 0;
     }
 }

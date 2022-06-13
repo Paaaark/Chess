@@ -35,7 +35,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView playerTwoMoney;
     boolean isCardChecked[] = new boolean[4];
     int whoseTurn = 0;
+    int alternateTurn = 0;
     boolean finishBetting = false;
+    boolean finishTurn = false;
 
     @Override
     public void onClick(View v) {
@@ -57,6 +59,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.playerTwoCardTwo:
                 showCard(playerTwoCardTwo, game.getPlayerTwoCardTwo(), 3);
                 break;
+            case R.id.playerOneCheck:
+                // #TODO: playerOneCheck
+                break;
+            case R.id.playerOneRaise:
+                // #TODO: playerOneRaise
+                break;
+            case R.id.playerOneFold:
+                if (alternateTurn != 0) {
+                    Toast.makeText(this, "Not your turn", Toast.LENGTH_SHORT).show();
+                } else {
+                    finishTurn = true;
+                    finishBetting = true;
+                    game.playerOneWon();
+                    updateStanding();
+                    alternateTurn = 1;
+                }
+                break;
+            case R.id.playerTwoCheck:
+                // #TODO: playerTwoCheck
+                break;
+            case R.id.playerTwoRaise:
+                // #TODO: playerTwoRaise
+                break;
+            case R.id.playerTwoFold:
+                if (alternateTurn != 0) {
+                    Toast.makeText(this, "Not your turn", Toast.LENGTH_SHORT).show();
+                } else {
+                    finishTurn = true;
+                    finishBetting = true;
+                    game.playerTwoWon();
+                    updateStanding();
+                    alternateTurn = 0;
+                }
+                break;
         }
     }
 
@@ -77,6 +113,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         player.addBetAmount(amount);
         betAmountText.setText(Integer.toString(player.getBetAmount()));
         moneyText.setText(Integer.toString(player.getHolding()));
+    }
+
+    public void updateStanding() {
+        playerOneBettedAmount.setText(game.getPlayerOneBetAmount());
+        playerOneMoney.setText(game.getPlayerOneHolding());
+        playerTwoBettedAmount.setText(game.getPlayerTwoBetAmount());
+        playerTwoMoney.setText(game.getPlayerTwoHolding());
     }
 
     @Override
@@ -151,9 +194,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 updateBet(game.getPlayerOne(), BIG_BLIND_AMOUNT, playerOneBettedAmount,
                         playerOneMoney);
             }
-            int alternateTurn = whoseTurn;
+            alternateTurn = whoseTurn;
             // Play without any shared cards showing
-            while (!finishBetting) {
+            while (!finishBetting && !finishTurn) {
                 if (alternateTurn == 0) {
                     // #TODO: Player 1 plays
                 } else {
