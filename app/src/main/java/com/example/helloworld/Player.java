@@ -2,10 +2,12 @@ package com.example.helloworld;
 
 public class Player {
     private int holding;
+    private int betAmount;
     private Card firstCard;
     private Card secondCard;
     public Player() {
         this.holding = 500;
+        this.betAmount = 0;
         firstCard = null;
         secondCard = null;
     }
@@ -19,5 +21,15 @@ public class Player {
     }
     public Card getSecondCard() {
         return secondCard;
+    }
+    public int getHolding() {
+        return holding;
+    }
+    public int getBetAmount() {
+        return betAmount;
+    }
+    public int addBetAmount(int amount) {
+        betAmount += amount;
+        return betAmount;
     }
 }

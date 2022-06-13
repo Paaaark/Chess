@@ -4,7 +4,7 @@ public class Game {
     private Player playerOne;
     private Player playerTwo;
     private Deck deck;
-    int turn;
+    private int turn;
     public Game() {
         playerOne = new Player();
         playerTwo = new Player();
@@ -33,5 +33,20 @@ public class Game {
     }
     public Card getPlayerTwoCardTwo() {
         return playerTwo.getSecondCard();
+    }
+    public int whoseTurnIsIt() {
+        return turn % 2;
+    }
+    public int getPlayerOneHolding() {
+        return playerOne.getHolding();
+    }
+    public int getPlayerTwoHolding() {
+        return playerTwo.getHolding();
+    }
+    public Player getPlayerOne() {
+        return playerOne;
+    }
+    public Player getPlayerTwo() {
+        return playerTwo;
     }
 }
