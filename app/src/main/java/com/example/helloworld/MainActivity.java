@@ -1,10 +1,13 @@
 package com.example.helloworld;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.sql.SQLOutput;
 import java.util.*;
 import java.lang.Thread;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // Constants
     public static final long WAIT_TIME = 5000;
+    public static final int TOAST_TIME = 2000;
     public static final int BIG_BLIND_AMOUNT = 20;
 
     Game game;
@@ -28,14 +32,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button playerTwoCheck;
     Button playerTwoRaise;
     Button playerTwoFold;
-    // Texts
+    // TextViews
     TextView playerOneBettedAmount;
     TextView playerTwoBettedAmount;
     TextView playerOneMoney;
     TextView playerTwoMoney;
+    TextView playerOneToast;
+    TextView playerTwoToast;
+    Handler handler;
     boolean isCardChecked[] = new boolean[4];
+    boolean isAllCardsChecked = false;
     int whoseTurn = 0;
-    int alternateTurn = 0;
+    int alternateTurn = -1;
     boolean finishBetting = false;
     boolean finishTurn = false;
 
@@ -60,9 +68,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 showCard(playerTwoCardTwo, game.getPlayerTwoCardTwo(), 3);
                 break;
             case R.id.playerOneCheck:
-                // #TODO: playerOneCheck
-                if (alternateTurn != 0) {
-                    Toast.makeText(this, "Not your turn", Toast.LENGTH_SHORT).show();
+                if (!isAllCardsChecked) {
+                    showToast("Check your cards to proceed", playerOneToast);
+                } else if (alternateTurn != 0) {
+                    showToast("Wait for your turn!", playerOneToast);
                 } else {
                     finishBetting = true;
                     int diff = game.getPlayerTwoBetAmount() - game.getPlayerOneBetAmount();
@@ -72,11 +81,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.playerOneRaise:
-                // #TODO: playerOneRaise
+                if (!isAllCardsChecked) {
+                    showToast("Check your cards to proceed", playerOneToast);
+                } else if (alternateTurn != 0) {
+                    showToast("Wait for your turn!", playerOneToast);
+                } else {
+                    game.playerOneBet(BIG_BLIND_AMOUNT);
+                    updateStanding();
+                    alternateTurn = 1;
+                }
                 break;
             case R.id.playerOneFold:
-                if (alternateTurn != 0) {
-                    Toast.makeText(this, "Not your turn", Toast.LENGTH_SHORT).show();
+                if (!isAllCardsChecked) {
+                    showToast("Check your cards to proceed", playerOneToast);
+                } else if (alternateTurn != 0) {
+                    showToast("Wait for your turn!", playerOneToast);
                 } else {
                     finishTurn = true;
                     finishBetting = true;
@@ -86,8 +105,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.playerTwoCheck:
-                if (alternateTurn != 1) {
-                    Toast.makeText(this, "Not your turn", Toast.LENGTH_SHORT).show();
+                if (!isAllCardsChecked) {
+                    showToast("Check your cards to proceed", playerTwoToast);
+                } else if (alternateTurn != 1) {
+                    showToast("Wait for your turn!", playerTwoToast);
                 } else {
                     finishBetting = true;
                     int diff = game.getPlayerOneBetAmount() - game.getPlayerTwoBetAmount();
@@ -97,11 +118,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.playerTwoRaise:
-                // #TODO: playerTwoRaise
+                if (!isAllCardsChecked) {
+                    showToast("Check your cards to proceed", playerTwoToast);
+                } else if (alternateTurn != 1) {
+                    showToast("Wait for your turn!", playerTwoToast);
+                } else {
+                    game.playerTwoBet(BIG_BLIND_AMOUNT);
+                    updateStanding();
+                    alternateTurn = 0;
+                }
                 break;
             case R.id.playerTwoFold:
-                if (alternateTurn != 1) {
-                    Toast.makeText(this, "Not your turn", Toast.LENGTH_SHORT).show();
+                if (!isAllCardsChecked) {
+                    showToast("Check your cards to proceed", playerTwoToast);
+                } else if (alternateTurn != 1) {
+                    showToast("Wait for your turn!", playerTwoToast);
                 } else {
                     finishTurn = true;
                     finishBetting = true;
@@ -124,6 +155,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             btn.setText("Hidden");
         }
+        boolean flag = true;
+        for (boolean isChecked: isCardChecked) {
+            if (!isChecked) flag = false;
+        }
+        isAllCardsChecked = flag;
     }
 
     public void updateBet(Player player, int amount, TextView betAmountText, TextView moneyText) {
@@ -139,12 +175,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         playerTwoMoney.setText(game.getPlayerTwoHolding());
     }
 
+    public void startGame() {
+        if (game.numCardLeft() < 9) {
+            Toast.makeText(this, "Not Enough Cards Left, New Deck will be shuffled",
+                    Toast.LENGTH_SHORT).show();
+            game.getNewDeck();
+        }
+        game.giveOutCards();
+        Arrays.fill(isCardChecked, false);
+        isAllCardsChecked = false;
+        Toast.makeText(this, "Check your cards", Toast.LENGTH_SHORT).show();
+    }
+
+    public void showToast(String msg, TextView toast) {
+        System.out.println("showToast() triggered");
+        toast.setText(msg);
+        toast.setVisibility(View.VISIBLE);
+        Runnable r = new Runnable() {
+            public void run() {
+                toast.setVisibility(View.GONE);
+            }
+        };
+        handler.postDelayed(r, 1000);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         game = new Game();
+        handler = new Handler();
 
         // Add click listeners to buttons
         playerOneCardOne = findViewById(R.id.playerOneCardOne);
@@ -176,8 +237,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         playerOneMoney.setText(Integer.toString(game.getPlayerOneHolding()));
         playerTwoMoney = findViewById(R.id.playerTwoMoney);
         playerTwoMoney.setText(Integer.toString(game.getPlayerTwoHolding()));
+        playerOneToast = findViewById(R.id.playerOneToast);
+        playerTwoToast = findViewById(R.id.playerTwoToast);
 
+        startGame();
+
+/*
         while (true) {
+
+            System.out.println("Inside the first while loop");
             if (game.numCardLeft() < 9) {
                 Toast.makeText(this, "Not Enough Cards Left, New Deck will be shuffled",
                         Toast.LENGTH_SHORT).show();
@@ -189,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             // Make sure the players checked their cards
             while (true) {
+                System.out.println("Inside the second while loop");
                 try {
                     Thread.sleep(WAIT_TIME);
                 } catch (Exception e) {
@@ -201,6 +270,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 if (flag) break;
             }
+            System.out.println("Out of the second while loop");
 
             whoseTurn = game.whoseTurnIsIt();
             // Initial bet from the big blind
@@ -214,12 +284,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             alternateTurn = whoseTurn;
             // Play without any shared cards showing
             while (!finishBetting && !finishTurn) {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    // #TODO: Catch exception logic
+                }
                 if (alternateTurn == 0) {
                     // #TODO: Player 1 plays
                 } else {
                     // #TODO: Player 2 plays
                 }
             }
-        }
+            alternateTurn = -1;
+            if (finishTurn) continue;
+            alternateTurn = whoseTurn;
+            // Flip 3 cards
+            while (true) {
+                try {
+                    Thread.sleep(5000);
+                } catch (Exception e) {
+                    // #TODO: Exception logic
+                }
+                // #TODO:
+            }
+
+
+        }*/
     }
 }

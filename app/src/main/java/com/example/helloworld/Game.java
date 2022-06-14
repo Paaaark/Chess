@@ -73,4 +73,7 @@ public class Game {
     public void playerTwoBet(int amount) {
         playerTwo.addBetAmount(amount);
     }
+    public Card pickCard() {
+        return deck.pickCard();
+    }
 }
