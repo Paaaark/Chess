@@ -29,4 +29,20 @@ public class Card {
         result += Integer.toString(number);
         return result;
     }
+
+    public int getCardID() {
+        int id = 0;
+        switch (suit) {
+            case HEART:
+                id = 1; break;
+            case CLUB:
+                id = 2; break;
+            case SPADE:
+                id = 3; break;
+            default:
+                id = 0;
+        }
+        id += 4 * number;
+        return id;
+    }
 }
