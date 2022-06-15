@@ -19,8 +19,10 @@ public class Game {
         deck.initDeck();
     }
     public void giveOutCards() {
-        playerOne.handCards(deck.pickCard(), deck.pickCard());
-        playerTwo.handCards(deck.pickCard(), deck.pickCard());
+        playerOne.handCards(deck.pickCard(), Card.PLAYER_ONE_CARD_ONE, deck.pickCard(),
+                Card.PLAYER_ONE_CARD_TWO);
+        playerTwo.handCards(deck.pickCard(), Card.PLAYER_TWO_CARD_ONE, deck.pickCard(),
+                Card.PLAYER_TWO_CARD_TWO);
     }
     public Card getPlayerOneCardOne() {
         return playerOne.getFirstCard();

@@ -10,9 +10,9 @@ public class Deck {
 
     public static ArrayList<Card> initDeck() {
         ArrayList<Card> deck = new ArrayList<Card>();
-        for (int i = 1; i <= 13; i++) {
-            for (Suit suit : Suit.values()) {
-                deck.add(new Card(i, suit));
+        for (int i = 0; i <= 12; i++) {
+            for (int j = 0; j < 4; j++) {
+                deck.add(new Card(i, j));
             }
         }
         return deck;
