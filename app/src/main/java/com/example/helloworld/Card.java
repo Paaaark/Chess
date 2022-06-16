@@ -1,4 +1,6 @@
 package com.example.helloworld;
+import android.net.wifi.aware.PublishConfig;
+
 import java.util.*;
 
 public class Card {
@@ -42,6 +44,7 @@ public class Card {
     public static final int SHARED_CARD_THREE = 1007;
     public static final int SHARED_CARD_FOUR = 1008;
     public static final int SHARED_CARD_FIVE = 1009;
+    public static final int NUM_RANKS = 13;
 
     private int number;
     private int suit;

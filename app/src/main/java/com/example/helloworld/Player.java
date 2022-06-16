@@ -6,7 +6,7 @@ import java.lang.Math;
 
 public class Player {
 
-    public static final int RESULT_SIZE = 9;
+    public static final int RESULT_SIZE = 6;
 
     private int holding;
     private int betAmount;
@@ -55,8 +55,8 @@ public class Player {
         cards[sharedCards.size()] = firstCard.getCardID();
         cards[sharedCards.size() + 1] = secondCard.getCardID();
         Arrays.sort(cards);
-        // 0: combination type, 1-3: tie breakers, 4-8: cards in the combination
-        int result[] = new int[9];
+        // 0: combination type, 1-5: cards in combination
+        int result[] = new int[RESULT_SIZE];
         // Royal flush: 10-J-Q-K-A in the same suit
         result = isRoyalFlush(cards);
         if (result[0] == Card.ROYAL_FLUSH) {
@@ -72,6 +72,16 @@ public class Player {
         if (result[0] == Card.FOUR_OF_A_KIND) {
             return result;
         }
+        // Full house: A triple and a pair
+        result = isFullHouse(cards);
+        if (result[0] == Card.FULL_HOUSE) {
+            return result;
+        }
+        // Flush: Five cards in the same suit
+        result = isFlush(cards);
+        if (result[0] == Card.FLUSH) {
+            return result;
+        }
         // #TODO: detect type of poker hands
         return result;
     }
@@ -79,8 +89,7 @@ public class Player {
     /**
      * Returns an array. Content of the array (array.length = RESULT_SIEZ) is shown below.
      * 0: set to Card.ROYAL_FLUSH if the given cards form a royal flush, -1 otherwise;
-     * 1: tie breaker (value of the Ace in the flush); 2-3: padding, unknown value;
-     * 4-8: id of the cards that form royal flush, order as appears in the passed argument;
+     * 1-5: id of the cards that form royal flush, order in ascending order;
      * Royal flush: 10-J-Q-K-A in the same suit
      * @param cards Must be sorted in ascending order.
      * @return
@@ -92,7 +101,7 @@ public class Player {
             int cnt = 0;
             for (int j = 0; j < cards.length; j++) {
                 if (cards[j] % 4 == baseSuit && cards[j] / 13 >= Card.TEN) {
-                    result[4 + cnt] = cards[j];
+                    result[1 + cnt] = cards[j];
                     cnt++;
                 }
             }
@@ -108,8 +117,7 @@ public class Player {
     /**
      * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
      * 0: set to Card.STRAIGHT_FLUSH if the given cards form a straight flush, -1 otherwise;
-     * 1: tie breaker (value of the highest card in the flush); 2-3: padding, unknown value;
-     * 4-8: id of the cards that form royal flush, order not in any specific order;
+     * 1-5: id of the cards that form royal flush, order not in ascending order;
      * Straight flush: A straight in the same suit
      * @param cards Must be sorted in ascending order
      * @return
@@ -126,10 +134,9 @@ public class Player {
             }
             if (cnt == 5) {
                 for (int j = 0; j < 5; j++) {
-                    result[8 - j] = prev - 4 * j; // Fill with cards that form straight
+                    result[5 - j] = prev - 4 * j; // Fill with cards that form straight
                 }
                 result[0] = Card.STRAIGHT_FLUSH;
-                result[1] = prev;
                 return result;
             }
         }
@@ -140,9 +147,7 @@ public class Player {
     /**
      * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
      * 0: set to Card.FOUR_OF_A_KIND if detected, -1 otherwise;
-     * 1: tie breaker (value of the highest card in the quadruple: Spade of that rank);
-     * 2: tie breaker (value of the card not in the quadruple); 3: padding, unknown value;
-     * 4-8: value of the cards in the combination, quadruple comes first then a high card.
+     * 1-5: value of the cards in the combination, quadruple comes first then a high card.
      * @param cards Must be in ascending order
      * @return
      */
@@ -160,12 +165,10 @@ public class Player {
             }
             if (cnt == 4) {
                 result[0] = Card.FOUR_OF_A_KIND;
-                result[1] = baseRank * 4 + Card.SPADE;
-                result[2] = highest;
                 for (int j = 0; j < 4; j++) {
-                    result[j + 4] = baseRank * 4 + j;
+                    result[j + 1] = baseRank * 4 + j;
                 }
-                result[8] = highest;
+                result[5] = highest;
                 return result;
             }
         }
@@ -173,9 +176,58 @@ public class Player {
         return result;
     }
 
+    /**
+     * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below
+     * 0: set to Card.FULL_HOUSE if detected, -1 otherwise;
+     * 1-5: value of the cards forming full house, triple come first than a pair.
+     * @param cards Must be in ascending order
+     * @return
+     */
     private int[] isFullHouse(int cards[]) {
         int result[] = new int[RESULT_SIZE];
-        // #TODO: Finish full house detection logic
+        int ranks[] = new int[Card.NUM_RANKS];
+        for (int i = 0; i < cards.length; i++) {
+            ranks[cards[i] / 13]++;
+        }
+        int doubleRank = -1;
+        int tripleRank = -1;
+        for (int i = 0; i < ranks.length; i++) {
+            if (ranks[i] == 2) doubleRank = i;
+            if (ranks[i] == 3) tripleRank = i;
+        }
+        if (doubleRank != -1 && tripleRank != -1) {
+            result[0] = Card.FULL_HOUSE;
+            int triplePtr = 1; int doublePtr = 4;
+            for (int i = 0; i < ranks.length; i++) {
+                if (cards[i] / 13 == doubleRank) { result[doublePtr] = cards[i]; doublePtr++; }
+                if (cards[i] / 13 == tripleRank) { result[triplePtr] = cards[i]; triplePtr++; }
+            }
+            return result;
+        }
+        result[0] = -1;
+        return result;
+    }
+
+    /**
+     * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
+     * 0: set to Card.FLUSH if detected, -1 otherwise;
+     * 1-5: value of cards that form a flush, in ascending order
+     * @param cards Must be in ascending order
+     * @return
+     */
+    private int[] isFlush(int cards[]) {
+        int result[] = new int[RESULT_SIZE];
+        for (int i = 0; i < 3; i++) {
+            int baseSuit = cards[i] % 4; int cnt = 0;
+            for (int j = i; j < cards.length; j++) {
+                if (cards[j] % 4 == baseSuit) { cnt++; result[1+cnt] = cards[j]; }
+            }
+            if (cnt == 5) {
+                result[0] = Card.FLUSH;
+                return result;
+            }
+        }
+        result[0] = -1;
         return result;
     }
 }
