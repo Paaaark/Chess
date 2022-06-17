@@ -91,14 +91,7 @@ public class Card {
         return id;
     }
 
-    @Deprecated
-    /**
-     * Returns a unique value of the card. 1-indexed
-     * @return
-     */
-    public int getCardValue() {
-        int value = suit;
-        value += 4 * (number - 1);
-        return value;
+    public static int getRank(int cardVal) {
+        return cardVal / 13;
     }
 }

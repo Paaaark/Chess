@@ -82,6 +82,16 @@ public class Player {
         if (result[0] == Card.FLUSH) {
             return result;
         }
+        // Straight: Five cards in consecutive ranks
+        result = isStraight(cards);
+        if (result[0] == Card.STRAIGHT) {
+            return result;
+        }
+        // Triple: Three cards of the same rank
+        result = isTriple(cards);
+        if (result[0] == Card.TRIPLE) {
+            return result;
+        }
         // #TODO: detect type of poker hands
         return result;
     }
@@ -229,5 +239,71 @@ public class Player {
         }
         result[0] = -1;
         return result;
+    }
+
+    /**
+     * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
+     * 0: set to Card.STRAIGHT if detected, -1 otherwise;
+     * 1-5: content of the cards in straight in ascending order
+     * @param cards Must be in ascending order
+     * @return
+     */
+    private int[] isStraight(int cards[]) {
+        int result[] = new int[RESULT_SIZE];
+        for (int i = 0; i < 3; i++) {
+            int prevRank = Card.getRank(cards[i]);
+            int cnt = 1; result[1] = cards[i];
+            for (int j = 1; j < cards.length; j++) {
+                if (prevRank == Card.getRank(cards[j])) {
+                    result[cnt] = cards[j];
+                } else {
+                    if (cnt + 1 >= result.length) { cnt = 0; break; }
+                    result[cnt + 1] = cards[j]; cnt++;
+                    prevRank = Card.getRank(cards[j]);
+                }
+            }
+            if (cnt == 5) {
+                result[0] = Card.STRAIGHT;
+                return result;
+            }
+        }
+        result[0] = -1;
+        return result;
+    }
+
+    /**
+     * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
+     * 0: set to Card.TRIPLE if detected, -1 otherwise;
+     * 1-5: value of the cards in the combination, triple in ascending order comes first then two
+     * high cards in descending order
+     * @param cards Must be in ascending order
+     * @return
+     */
+    private int[] isTriple(int cards[]) {
+        int result[] = new int[RESULT_SIZE];
+        for (int i = cards.length - 1; i >= 2; i--) {
+            if ((Card.getRank(cards[i]) == Card.getRank(cards[i - 1])) &&
+                    (Card.getRank(cards[i]) == Card.getRank(cards[i - 2]))) {
+                result[0] = Card.TRIPLE;
+                result[1] = cards[i-2];
+                result[2] = cards[i-1];
+                result[3] = cards[i];
+                int cnt = 0;
+                for (int j = cards.length; j >= 0; j--) {
+                    if (cnt == 2) break;
+                    if (j > i || j < i - 2) {
+                        result[4+cnt] = j;
+                    }
+                }
+                return result;
+            }
+        }
+        result[0] = -1;
+        return result;
+    }
+
+    private int[] isTwoPairs(int cards[]) {
+        int result[] = new int[RESULT_SIZE];
+
     }
 }
