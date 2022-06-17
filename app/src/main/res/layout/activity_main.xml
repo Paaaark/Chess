@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:id="@+id/wholeScreen">
 
     <ImageView
         android:id="@+id/playerOneCardOne"
@@ -352,6 +353,31 @@
         app:layout_constraintVertical_bias="0.3"
         android:rotation="180"
         android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/playerOneResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hidden"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.7" />
+
+    <TextView
+        android:id="@+id/playerTwoResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hidden"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3"
+        android:rotation="180"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

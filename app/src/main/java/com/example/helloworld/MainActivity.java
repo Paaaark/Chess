@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView playerTwoToast;
     TextView playerOneTurn;
     TextView playerTwoTurn;
+    TextView playerOneResult;
+    TextView playerTwoResult;
     ArrayList<ImageView> sharedCardsImages;
     Handler handler;
     int pokerCardBack;
@@ -89,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (diff != 0) {
                         if (sharedCards.size() == 5) {
                             determineWinner();
-                            startGame();
+                            //startGame();
                         } else {
                             showSharedCards();
                         }
@@ -133,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (diff != 0) {
                         if (sharedCards.size() == 5) {
                             determineWinner();
-                            startGame();
+                            //startGame();
                         } else {
                             showSharedCards();
                         }
@@ -224,7 +226,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void determineWinner() {
-        return;
+        int result[] = game.getWinner(sharedCards);
+        playerOneResult.setText(Card.combinationToString(result[1]));
+        playerOneResult.setVisibility(View.VISIBLE);
+        playerTwoResult.setText(Card.combinationToString(result[7]));
+        playerTwoResult.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -293,6 +299,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         playerTwoCardTwo.setTag(HIDDEN);
         playerOneTurn.setVisibility(View.GONE);
         playerTwoTurn.setVisibility(View.GONE);
+        playerOneResult.setVisibility(View.GONE);
+        playerTwoResult.setVisibility(View.GONE);
         if (game.numCardLeft() < 9) {
             Toast.makeText(this, "Not Enough Cards Left, New Deck will be shuffled",
                     Toast.LENGTH_SHORT).show();
@@ -331,58 +339,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Adding image resources to the arraylist
 
         cardImageResources = new int[52];
-//        cardImageResources[0] = R.mipmap.two_of_diamonds;
-//        cardImageResources[1] = R.mipmap.two_of_clubs;
-//        cardImageResources[2] = R.mipmap.two_of_hearts;
-//        cardImageResources[3] = R.mipmap.two_of_spades;
-//        cardImageResources[4] = R.mipmap.three_of_diamonds;
-//        cardImageResources[5] = R.mipmap.three_of_clubs;
-//        cardImageResources[6] = R.mipmap.three_of_hearts;
-//        cardImageResources[7] = R.mipmap.three_of_spades;
-//        cardImageResources[8] = R.mipmap.four_of_diamonds;
-//        cardImageResources[9] = R.mipmap.four_of_clubs;
-//        cardImageResources[10] = R.mipmap.four_of_hearts;
-//        cardImageResources[11] = R.mipmap.four_of_spades;
-//        cardImageResources[12] = R.mipmap.five_of_diamonds;
-//        cardImageResources[13] = R.mipmap.five_of_clubs;
-//        cardImageResources[14] = R.mipmap.five_of_hearts;
-//        cardImageResources[15] = R.mipmap.five_of_spades;
-//        cardImageResources[16] = R.mipmap.six_of_diamonds;
-//        cardImageResources[17] = R.mipmap.six_of_clubs;
-//        cardImageResources[18] = R.mipmap.six_of_hearts;
-//        cardImageResources[19] = R.mipmap.six_of_spades;
-//        cardImageResources[20] = R.mipmap.seven_of_diamonds;
-//        cardImageResources[21] = R.mipmap.seven_of_clubs;
-//        cardImageResources[22] = R.mipmap.seven_of_hearts;
-//        cardImageResources[23] = R.mipmap.seven_of_spades;
-//        cardImageResources[24] = R.mipmap.eight_of_diamonds;
-//        cardImageResources[25] = R.mipmap.eight_of_clubs;
-//        cardImageResources[26] = R.mipmap.eight_of_hearts;
-//        cardImageResources[27] = R.mipmap.eight_of_spades;
-//        cardImageResources[28] = R.mipmap.nine_of_diamonds;
-//        cardImageResources[29] = R.mipmap.nine_of_clubs;
-//        cardImageResources[30] = R.mipmap.nine_of_hearts;
-//        cardImageResources[31] = R.mipmap.nine_of_spades;
-//        cardImageResources[32] = R.mipmap.ten_of_diamonds;
-//        cardImageResources[33] = R.mipmap.ten_of_clubs;
-//        cardImageResources[34] = R.mipmap.ten_of_hearts;
-//        cardImageResources[35] = R.mipmap.ten_of_spades;
-//        cardImageResources[36] = R.mipmap.jack_of_diamonds;
-//        cardImageResources[37] = R.mipmap.jack_of_clubs;
-//        cardImageResources[38] = R.mipmap.jack_of_clubs;
-//        cardImageResources[39] = R.mipmap.jack_of_spades;
-//        cardImageResources[40] = R.mipmap.queen_of_diamonds;
-//        cardImageResources[41] = R.mipmap.queen_of_clubs;
-//        cardImageResources[42] = R.mipmap.queen_of_hearts;
-//        cardImageResources[43] = R.mipmap.queen_of_spades;
-//        cardImageResources[44] = R.mipmap.king_of_clubs;
-//        cardImageResources[45] = R.mipmap.king_of_clubs;
-//        cardImageResources[46] = R.mipmap.king_of_hearts;
-//        cardImageResources[47] = R.mipmap.king_of_spades;
-//        cardImageResources[48] = R.mipmap.ace_of_diamonds;
-//        cardImageResources[49] = R.mipmap.ace_of_clubs;
-//        cardImageResources[50] = R.mipmap.ace_of_hearts;
-//        cardImageResources[51] = R.mipmap.ace_of_spades;
+        cardImageResources[0] = R.mipmap.two_of_diamonds;
+        cardImageResources[1] = R.mipmap.two_of_clubs;
+        cardImageResources[2] = R.mipmap.two_of_hearts;
+        cardImageResources[3] = R.mipmap.two_of_spades;
+        cardImageResources[4] = R.mipmap.three_of_diamonds;
+        cardImageResources[5] = R.mipmap.three_of_clubs;
+        cardImageResources[6] = R.mipmap.three_of_hearts;
+        cardImageResources[7] = R.mipmap.three_of_spades;
+        cardImageResources[8] = R.mipmap.four_of_diamonds;
+        cardImageResources[9] = R.mipmap.four_of_clubs;
+        cardImageResources[10] = R.mipmap.four_of_hearts;
+        cardImageResources[11] = R.mipmap.four_of_spades;
+        cardImageResources[12] = R.mipmap.five_of_diamonds;
+        cardImageResources[13] = R.mipmap.five_of_clubs;
+        cardImageResources[14] = R.mipmap.five_of_hearts;
+        cardImageResources[15] = R.mipmap.five_of_spades;
+        cardImageResources[16] = R.mipmap.six_of_diamonds;
+        cardImageResources[17] = R.mipmap.six_of_clubs;
+        cardImageResources[18] = R.mipmap.six_of_hearts;
+        cardImageResources[19] = R.mipmap.six_of_spades;
+        cardImageResources[20] = R.mipmap.seven_of_diamonds;
+        cardImageResources[21] = R.mipmap.seven_of_clubs;
+        cardImageResources[22] = R.mipmap.seven_of_hearts;
+        cardImageResources[23] = R.mipmap.seven_of_spades;
+        cardImageResources[24] = R.mipmap.eight_of_diamonds;
+        cardImageResources[25] = R.mipmap.eight_of_clubs;
+        cardImageResources[26] = R.mipmap.eight_of_hearts;
+        cardImageResources[27] = R.mipmap.eight_of_spades;
+        cardImageResources[28] = R.mipmap.nine_of_diamonds;
+        cardImageResources[29] = R.mipmap.nine_of_clubs;
+        cardImageResources[30] = R.mipmap.nine_of_hearts;
+        cardImageResources[31] = R.mipmap.nine_of_spades;
+        cardImageResources[32] = R.mipmap.ten_of_diamonds;
+        cardImageResources[33] = R.mipmap.ten_of_clubs;
+        cardImageResources[34] = R.mipmap.ten_of_hearts;
+        cardImageResources[35] = R.mipmap.ten_of_spades;
+        cardImageResources[36] = R.mipmap.jack_of_diamonds;
+        cardImageResources[37] = R.mipmap.jack_of_clubs;
+        cardImageResources[38] = R.mipmap.jack_of_clubs;
+        cardImageResources[39] = R.mipmap.jack_of_spades;
+        cardImageResources[40] = R.mipmap.queen_of_diamonds;
+        cardImageResources[41] = R.mipmap.queen_of_clubs;
+        cardImageResources[42] = R.mipmap.queen_of_hearts;
+        cardImageResources[43] = R.mipmap.queen_of_spades;
+        cardImageResources[44] = R.mipmap.king_of_clubs;
+        cardImageResources[45] = R.mipmap.king_of_clubs;
+        cardImageResources[46] = R.mipmap.king_of_hearts;
+        cardImageResources[47] = R.mipmap.king_of_spades;
+        cardImageResources[48] = R.mipmap.ace_of_diamonds;
+        cardImageResources[49] = R.mipmap.ace_of_clubs;
+        cardImageResources[50] = R.mipmap.ace_of_hearts;
+        cardImageResources[51] = R.mipmap.ace_of_spades;
 
         game = new Game();
         handler = new Handler();
@@ -434,6 +442,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sharedCardsImages.get(4).setTag(HIDDEN);
         playerOneTurn = findViewById(R.id.playerOneTurn);
         playerTwoTurn = findViewById(R.id.playerTwoTurn);
+        playerOneResult = findViewById(R.id.playerOneResult);
+        playerTwoResult = findViewById(R.id.playerTwoResult);
 
         startGame();
     }

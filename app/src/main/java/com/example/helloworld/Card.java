@@ -94,4 +94,31 @@ public class Card {
     public static int getRank(int cardVal) {
         return cardVal / 13;
     }
+
+    public static String combinationToString(int combinationType) {
+        switch (combinationType) {
+            case ROYAL_FLUSH:
+                return "Royal Flush";
+            case STRAIGHT_FLUSH:
+                return "Straight Flush";
+            case FOUR_OF_A_KIND:
+                return "Four of a Kind";
+            case FULL_HOUSE:
+                return "Full House";
+            case FLUSH:
+                return "Flush";
+            case STRAIGHT:
+                return "Straight";
+            case TRIPLE:
+                return "Triple";
+            case TWO_PAIRS:
+                return "Two Pairs";
+            case ONE_PAIR:
+                return "One Pair";
+            case HIGH_CARD:
+                return "High Card";
+            default:
+                return "Error (Error code " + combinationType + ")";
+        }
+    }
 }

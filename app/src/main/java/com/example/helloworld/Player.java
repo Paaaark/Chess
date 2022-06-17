@@ -73,7 +73,8 @@ public class Player {
             return result;
         }
         // Full house: A triple and a pair
-        result = isFullHouse(cards);
+        //result = isFullHouse(cards);
+        // #TODO: Full house detection causes arrayIndexOutOfBounds exception
         if (result[0] == Card.FULL_HOUSE) {
             return result;
         }
@@ -141,7 +142,7 @@ public class Player {
     /**
      * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
      * 0: set to Card.STRAIGHT_FLUSH if the given cards form a straight flush, -1 otherwise;
-     * 1-5: id of the cards that form royal flush, order not in ascending order;
+     * 1-5: id of the cards that form royal flush, order not in descending order;
      * Straight flush: A straight in the same suit
      * @param cards Must be sorted in ascending order
      * @return
@@ -150,17 +151,17 @@ public class Player {
         int result[] = new int[RESULT_SIZE];
         for (int i = 0; i < 3; i++) {
             int baseSuit = cards[i] % 4;    
-            int cnt = 1; int prev = cards[i] / 13;
+            int cnt = 1; int prev = Card.getRank(cards[i]);
             for (int j = i + 1; j < cards.length; j++) {
-                if (cards[j] % 4 == baseSuit && cards[j] / 13 == prev + 1) {
+                if (cards[j] % 4 == baseSuit && Card.getRank(cards[j]) == prev + 1) {
                     cnt++; prev = cards[j] / 13;
                 }
             }
             if (cnt == 5) {
-                for (int j = 0; j < 5; j++) {
-                    result[5 - j] = prev - 4 * j; // Fill with cards that form straight
-                }
                 result[0] = Card.STRAIGHT_FLUSH;
+                for (int j = 0; j < 5; j++) {
+                    result[j + 1] = prev - 4 * j; // Fill with cards that form straight
+                }
                 return result;
             }
         }
@@ -203,7 +204,8 @@ public class Player {
     /**
      * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below
      * 0: set to Card.FULL_HOUSE if detected, -1 otherwise;
-     * 1-5: value of the cards forming full house, triple come first than a pair.
+     * 1-5: value of the cards forming full house, triple come first than a pair, all in descending
+     * order.
      * @param cards Must be in ascending order
      * @return
      */
@@ -222,9 +224,10 @@ public class Player {
         if (doubleRank != -1 && tripleRank != -1) {
             result[0] = Card.FULL_HOUSE;
             int triplePtr = 1; int doublePtr = 4;
-            for (int i = 0; i < ranks.length; i++) {
-                if (cards[i] / 13 == doubleRank) { result[doublePtr] = cards[i]; doublePtr++; }
-                if (cards[i] / 13 == tripleRank) { result[triplePtr] = cards[i]; triplePtr++; }
+            for (int i = cards.length; i >= 0; i--) {
+                System.out.println("Double Rank:" + doubleRank);
+                if (Card.getRank(cards[i]) == doubleRank) { result[doublePtr] = cards[i]; doublePtr++; }
+                if (Card.getRank(cards[i]) == tripleRank) { result[triplePtr] = cards[i]; triplePtr++; }
             }
             return result;
         }
@@ -235,7 +238,7 @@ public class Player {
     /**
      * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
      * 0: set to Card.FLUSH if detected, -1 otherwise;
-     * 1-5: value of cards that form a flush, in ascending order
+     * 1-5: value of cards that form a flush, in descending order
      * @param cards Must be in ascending order
      * @return
      */
@@ -244,7 +247,8 @@ public class Player {
         for (int i = 0; i < 3; i++) {
             int baseSuit = cards[i] % 4; int cnt = 0;
             for (int j = i; j < cards.length; j++) {
-                if (cards[j] % 4 == baseSuit) { cnt++; result[1+cnt] = cards[j]; }
+                if (cards[j] % 4 == baseSuit) { cnt++; result[6 - cnt] = cards[j]; }
+                if (cnt == 6) { cnt = -1; break; }
             }
             if (cnt == 5) {
                 result[0] = Card.FLUSH;
@@ -258,7 +262,7 @@ public class Player {
     /**
      * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
      * 0: set to Card.STRAIGHT if detected, -1 otherwise;
-     * 1-5: content of the cards in straight in ascending order
+     * 1-5: content of the cards in straight in descending order
      * @param cards Must be in ascending order
      * @return
      */
@@ -266,13 +270,13 @@ public class Player {
         int result[] = new int[RESULT_SIZE];
         for (int i = 0; i < 3; i++) {
             int prevRank = Card.getRank(cards[i]);
-            int cnt = 1; result[1] = cards[i];
+            int cnt = 1; result[5] = cards[i];
             for (int j = 1; j < cards.length; j++) {
                 if (prevRank == Card.getRank(cards[j])) {
                     result[cnt] = cards[j];
                 } else {
                     if (cnt + 1 >= result.length) { cnt = 0; break; }
-                    result[cnt + 1] = cards[j]; cnt++;
+                    result[5 - cnt] = cards[j]; cnt++;
                     prevRank = Card.getRank(cards[j]);
                 }
             }
@@ -288,7 +292,7 @@ public class Player {
     /**
      * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
      * 0: set to Card.TRIPLE if detected, -1 otherwise;
-     * 1-5: value of the cards in the combination, triple in ascending order comes first then two
+     * 1-5: value of the cards in the combination, triple in descending order comes first then two
      * high cards in descending order
      * @param cards Must be in ascending order
      * @return
@@ -299,9 +303,9 @@ public class Player {
             if ((Card.getRank(cards[i]) == Card.getRank(cards[i - 1])) &&
                     (Card.getRank(cards[i]) == Card.getRank(cards[i - 2]))) {
                 result[0] = Card.TRIPLE;
-                result[1] = cards[i-2];
+                result[1] = cards[i];
                 result[2] = cards[i-1];
-                result[3] = cards[i];
+                result[3] = cards[i-2];
                 int cnt = 0;
                 for (int j = cards.length; j >= 0; j--) {
                     if (cnt == 2) break;
