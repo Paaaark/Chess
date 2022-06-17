@@ -92,7 +92,21 @@ public class Player {
         if (result[0] == Card.TRIPLE) {
             return result;
         }
-        // #TODO: detect type of poker hands
+        // Two pairs: Two pairs of cards of the same rank
+        result = isTwoPairs(cards);
+        if (result[0] == Card.TWO_PAIRS) {
+            return result;
+        }
+        // One Pair: A pair of cards of the same rank
+        result = isOnePair(cards);
+        if (result[0] == Card.ONE_PAIR) {
+            return result;
+        }
+        // If none detected, fill the result array with high cards
+        result[0] = Card.HIGH_CARD;
+        for (int i = 1; i < 6; i++) {
+            result[i] = cards[cards.length - i];
+        }
         return result;
     }
 
@@ -302,8 +316,66 @@ public class Player {
         return result;
     }
 
+    /**
+     * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
+     * 0: set to Card.TWO_PAIRS if detected, -1 otherwise;
+     * 1-5: value of the cards in the combination, two pairs in descending order and a high card
+     * @param cards Must be in ascending order
+     * @return
+     */
     private int[] isTwoPairs(int cards[]) {
         int result[] = new int[RESULT_SIZE];
+        for (int i = cards.length - 1; i >= 1; i--) {
+            if (Card.getRank(cards[i]) == Card.getRank(cards[i-1])) { /* Detected the first pair */
+                for (int j = i - 2; j >= 1; j--) {
+                    if (Card.getRank(cards[j]) == Card.getRank(cards[j-1])) {
+                        // Detected the second pair; Fill the array with contents
+                        result[0] = Card.TWO_PAIRS;
+                        result[1] = cards[i];
+                        result[2] = cards[i-1];
+                        result[3] = cards[j];
+                        result[4] = cards[j-1];
+                        for (int k = cards.length - 1; k >= 0; k--) { /* Look for high card */
+                            if (k != i && k != i - 1 && k != j && k != j - 1) {
+                                result[5] = cards[k]; break;
+                            }
+                        }
+                        return result;
+                    }
+                }
+            }
+        }
+        result[0] = -1;
+        return result;
+    }
 
+    /**
+     * Returns an array. Contents of the array (array.length = RESULT_SIZE) is shown below.
+     * 0: set to Card.ONE_PAIR if detected, -1 otherwise;
+     * 1-5: value of the cards in the combination, a pair in descending order comes first and three
+     * high cards in descending order
+     * @param cards Must be in ascending order
+     * @return
+     */
+    private int[] isOnePair(int cards[]) {
+        int result[] = new int[RESULT_SIZE];
+        for (int i = cards.length - 1; i >= 1; i--) {
+            if (Card.getRank(cards[i]) == Card.getRank(cards[i - 1])) { /* Pair detected */
+                result[0] = Card.ONE_PAIR;
+                result[1] = cards[i];
+                result[2] = cards[i-1];
+                int cnt = 0;
+                for (int j = cards.length - 1; j >= 0; j--) { /* Get three high cards */
+                    if (cnt == 3) break;
+                    if (j != i && j != i - 1) {
+                        result[3 + cnt] = cards[j];
+                        cnt++;
+                    }
+                }
+                return result;
+            }
+        }
+        result[0] = -1;
+        return result;
     }
 }
