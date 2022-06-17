@@ -1,6 +1,7 @@
 package com.example.helloworld;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.sql.SQLOutput;
 import java.util.*;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final int TOAST_TIME = 2000;
     public static final int BIG_BLIND_AMOUNT = 20;
     public static final String HIDDEN = "-1";
+    public static final int CHECKING_WINNER = 1001;
 
     Game game;
     // Buttons
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageView playerOneCardTwo;
     ImageView playerTwoCardOne;
     ImageView playerTwoCardTwo;
+    Button startButton;
     Button playerOneCheck;
     Button playerOneRaise;
     Button playerOneFold;
@@ -46,7 +49,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView playerTwoTurn;
     TextView playerOneResult;
     TextView playerTwoResult;
-    // #TODO: Include screen
+    TextView playerOneResultCards;
+    TextView playerTwoResultCards;
+    ConstraintLayout screen;
+    ConstraintLayout startScreen;
     ArrayList<ImageView> sharedCardsImages;
     Handler handler;
     int pokerCardBack;
@@ -56,8 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int alternateTurn = -1;
     ArrayList<Card> sharedCards;
     int[] cardImageResources;
-    boolean finishBetting = false;
-    boolean finishTurn = false;
+    int extraHolding = 0;
 
     @Override
     public void onClick(View v) {
@@ -67,7 +72,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         Card card;
         switch (v.getId()) {
-            // #TODO: Include tap anywhere to continue
+//            case R.id.startButton:
+//                setContentView(R.layout.activity_main); break;
+            case R.id.wholeScreen:
+                if (alternateTurn == CHECKING_WINNER) {
+                    startGame();
+                }
+                break;
             case R.id.playerOneCardOne:
                 showCard(playerOneCardOne, game.getPlayerOneCardOne(), 0);
                 break;
@@ -228,13 +239,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void determineWinner() {
+        alternateTurn = CHECKING_WINNER;
         int result[] = game.getWinner(sharedCards);
         playerOneTurn.setVisibility(View.GONE);
         playerTwoTurn.setVisibility(View.GONE);
         playerOneResult.setText(Card.combinationToString(result[1]));
         playerOneResult.setVisibility(View.VISIBLE);
+        String playerOneDisplay = Card.toString(result[2]) + ", " + Card.toString(result[3]) +
+                                  ", " + Card.toString(result[4]) + ", " + Card.toString(result[5])
+                                  + ", " + Card.toString(result[6]);
+        playerOneResultCards.setText(playerOneDisplay);
+        playerOneResultCards.setVisibility(View.VISIBLE);
         playerTwoResult.setText(Card.combinationToString(result[7]));
         playerTwoResult.setVisibility(View.VISIBLE);
+        String playerTwoDisplay = Card.toString(result[8]) + ", " + Card.toString(result[9]) +
+                                  ", " + Card.toString(result[10]) + ", " + Card.toString(result[11])
+                                  + ", " + Card.toString(result[12]);
+        playerTwoResultCards.setText(playerTwoDisplay);
+        playerTwoResultCards.setVisibility(View.VISIBLE);
+        showToast("Tap anywhere to continue", playerOneToast);
+        showToast("Tap anywhere to continue", playerTwoToast);
     }
 
     /**
@@ -305,6 +329,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         playerTwoTurn.setVisibility(View.GONE);
         playerOneResult.setVisibility(View.GONE);
         playerTwoResult.setVisibility(View.GONE);
+        playerOneResultCards.setVisibility(View.GONE);
+        playerTwoResultCards.setVisibility(View.GONE);
+        updateStanding();
         if (game.numCardLeft() < 9) {
             Toast.makeText(this, "Not Enough Cards Left, New Deck will be shuffled",
                     Toast.LENGTH_SHORT).show();
@@ -313,7 +340,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         game.giveOutCards();
         Arrays.fill(isCardChecked, false);
         isAllCardsChecked = false;
-        Toast.makeText(this, "Check your cards", Toast.LENGTH_SHORT).show();
+        showToast("Check your cards", playerOneToast);
+        showToast("Check your cards", playerTwoToast);
         whoseTurn = whoseTurn == 1 ? 0 : 1;
         alternateTurn = -1;
     }
@@ -338,6 +366,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setContentView(R.layout.app_start_screen);
+
         setContentView(R.layout.activity_main);
 
         // Adding image resources to the arraylist
@@ -423,6 +453,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         playerTwoRaise.setOnClickListener(this);
         playerTwoFold = findViewById(R.id.playerTwoFold);
         playerTwoFold.setOnClickListener(this);
+        screen = findViewById(R.id.wholeScreen);
+        screen.setOnClickListener(this);
+        //startScreen = findViewById(R.id.startScreen);
+        //startButton = findViewById(R.id.startButton);
+        //startButton.setOnClickListener(this);
         // Initialize text views
         playerOneBettedAmount = findViewById(R.id.playerOneBettedAmount);
         playerOneBettedAmount.setText("0");
@@ -448,6 +483,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         playerTwoTurn = findViewById(R.id.playerTwoTurn);
         playerOneResult = findViewById(R.id.playerOneResult);
         playerTwoResult = findViewById(R.id.playerTwoResult);
+        playerOneResultCards = findViewById(R.id.playerOneResultCards);
+        playerTwoResultCards = findViewById(R.id.playerTwoResultCards);
 
         startGame();
     }

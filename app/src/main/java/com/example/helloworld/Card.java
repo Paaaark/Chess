@@ -90,6 +90,49 @@ public class Card {
         return id;
     }
 
+    public static String toString(int cardVal) {
+        String result = "";
+        switch (getSuit(cardVal)) {
+            case CLUB:
+                result += "Club "; break;
+            case DIAMOND:
+                result += "Diamond "; break;
+            case HEART:
+                result += "Heart "; break;
+            case SPADE:
+                result += "Spade "; break;
+        }
+        switch (getRank(cardVal)) {
+            case ACE:
+                result += "A"; break;
+            case TWO:
+                result += "2"; break;
+            case THREE:
+                result += "3"; break;
+            case FOUR:
+                result += "4"; break;
+            case FIVE:
+                result += "5"; break;
+            case SIX:
+                result += "6"; break;
+            case SEVEN:
+                result += "7"; break;
+            case EIGHT:
+                result += "8"; break;
+            case NINE:
+                result += "9"; break;
+            case TEN:
+                result += "10"; break;
+            case JACK:
+                result += "J"; break;
+            case QUEEN:
+                result += "Q"; break;
+            case KING:
+                result += "K"; break;
+        }
+        return result;
+    }
+
     public static int getRank(int cardVal) {
         return cardVal / 4;
     }

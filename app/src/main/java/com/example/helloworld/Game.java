@@ -14,11 +14,13 @@ public class Game {
     private Player playerTwo;
     private Deck deck;
     private int turn;
+    private int extraHolding;
     public Game() {
         playerOne = new Player();
         playerTwo = new Player();
         deck = new Deck();
         turn = 0;
+        extraHolding = 0;
     }
 
     public int numCardLeft() {
@@ -120,6 +122,17 @@ public class Game {
                 totalResult[0] = TIE;
             }
         }
+
+        if (totalResult[0] == PLAYER_ONE_WON) {
+            playerOneWon();
+        } else if (totalResult[0] == PLAYER_TWO_WON) {
+            playerTwoWon();
+        } else {
+            extraHolding = getPlayerOneBetAmount() + getPlayerTwoBetAmount();
+            playerOne.emptyBetAmount();
+            playerTwo.emptyBetAmount();
+        }
+
         return totalResult;
     }
 }
