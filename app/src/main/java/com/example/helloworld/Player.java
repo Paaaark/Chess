@@ -54,6 +54,13 @@ public class Player {
         }
         cards[sharedCards.size()] = firstCard.getCardID();
         cards[sharedCards.size() + 1] = secondCard.getCardID();
+
+        System.out.print("Cards: ");
+        for (int i = 0; i < 7; i++) {
+            System.out.print(cards[i] + " ");
+        }
+        System.out.println("");
+
         Arrays.sort(cards);
         // 0: combination type, 1-5: cards in combination
         int result[] = new int[RESULT_SIZE];
@@ -73,7 +80,7 @@ public class Player {
             return result;
         }
         // Full house: A triple and a pair
-        //result = isFullHouse(cards);
+        result = isFullHouse(cards);
         // #TODO: Full house detection causes arrayIndexOutOfBounds exception
         if (result[0] == Card.FULL_HOUSE) {
             return result;
@@ -122,10 +129,10 @@ public class Player {
     private int[] isRoyalFlush(int cards[]) {
         int result[] = new int[RESULT_SIZE];
         for (int i = 0; i < 3; i++) {
-            int baseSuit = cards[i] % 4;
+            int baseSuit = Card.getSuit(cards[i]);
             int cnt = 0;
             for (int j = 0; j < cards.length; j++) {
-                if (cards[j] % 4 == baseSuit && cards[j] / 13 >= Card.TEN) {
+                if (Card.getSuit(cards[j]) == baseSuit && Card.getRank(cards[j]) >= Card.TEN) {
                     result[1 + cnt] = cards[j];
                     cnt++;
                 }
@@ -150,11 +157,11 @@ public class Player {
     private int[] isStraightFlush(int cards[]) {
         int result[] = new int[RESULT_SIZE];
         for (int i = 0; i < 3; i++) {
-            int baseSuit = cards[i] % 4;    
+            int baseSuit = Card.getSuit(cards[i]);
             int cnt = 1; int prev = Card.getRank(cards[i]);
             for (int j = i + 1; j < cards.length; j++) {
                 if (cards[j] % 4 == baseSuit && Card.getRank(cards[j]) == prev + 1) {
-                    cnt++; prev = cards[j] / 13;
+                    cnt++; prev = Card.getRank(cards[j]);
                 }
             }
             if (cnt == 5) {
@@ -179,10 +186,10 @@ public class Player {
     private int[] isFourOfAKind(int cards[]) {
         int result[] = new int[RESULT_SIZE];
         for (int i = 0; i < 4; i++) {
-            int baseRank = cards[i] / 13;
+            int baseRank = Card.getRank(cards[i]);
             int cnt = 0; int highest = -1;
             for (int j = 0; j < cards.length; j++) {
-                if (cards[j] / 13 == baseRank) {
+                if (Card.getRank(cards[j]) == baseRank) {
                     cnt++;
                 } else {
                     highest = Math.max(highest, cards[j]);
@@ -213,7 +220,7 @@ public class Player {
         int result[] = new int[RESULT_SIZE];
         int ranks[] = new int[Card.NUM_RANKS];
         for (int i = 0; i < cards.length; i++) {
-            ranks[cards[i] / 13]++;
+            ranks[Card.getRank(cards[i])]++;
         }
         int doubleRank = -1;
         int tripleRank = -1;
@@ -273,8 +280,8 @@ public class Player {
             int cnt = 1; result[5] = cards[i];
             for (int j = 1; j < cards.length; j++) {
                 if (prevRank == Card.getRank(cards[j])) {
-                    result[cnt] = cards[j];
-                } else {
+                    result[6 - cnt] = cards[j];
+                } else if (prevRank + 1 == Card.getRank(cards[j])) {
                     if (cnt + 1 >= result.length) { cnt = 0; break; }
                     result[5 - cnt] = cards[j]; cnt++;
                     prevRank = Card.getRank(cards[j]);

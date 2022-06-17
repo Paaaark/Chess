@@ -86,13 +86,16 @@ public class Card {
      * @return
      */
     public int getCardID() {
-        int id = suit;
-        id += 4 * number;
+        int id = suit + 4 * number;
         return id;
     }
 
     public static int getRank(int cardVal) {
-        return cardVal / 13;
+        return cardVal / 4;
+    }
+
+    public static int getSuit(int cardVal) {
+        return cardVal % 4;
     }
 
     public static String combinationToString(int combinationType) {

@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView playerTwoTurn;
     TextView playerOneResult;
     TextView playerTwoResult;
+    // #TODO: Include screen
     ArrayList<ImageView> sharedCardsImages;
     Handler handler;
     int pokerCardBack;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         Card card;
         switch (v.getId()) {
+            // #TODO: Include tap anywhere to continue
             case R.id.playerOneCardOne:
                 showCard(playerOneCardOne, game.getPlayerOneCardOne(), 0);
                 break;
@@ -227,6 +229,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void determineWinner() {
         int result[] = game.getWinner(sharedCards);
+        playerOneTurn.setVisibility(View.GONE);
+        playerTwoTurn.setVisibility(View.GONE);
         playerOneResult.setText(Card.combinationToString(result[1]));
         playerOneResult.setVisibility(View.VISIBLE);
         playerTwoResult.setText(Card.combinationToString(result[7]));
